@@ -1,6 +1,19 @@
 const wppconnect = require('@wppconnect-team/wppconnect');
 
-wppconnect.create().then((client) => start(client));
+wppconnect.create({
+  session: 'pousada-bot',
+  catchQR: (base64Qr, asciiQR, attempts, urlCode) => {
+    console.log('⚠️ Escaneie este QR Code para conectar o bot!');
+    console.log(asciiQR); // Mostra versão em texto no log
+    console.log(`✅ Abra este link no navegador para ver o QR Code:`);
+    console.log(`https://api.qrserver.com/v1/create-qr-code/?data=${urlCode}`);
+  },
+  statusFind: (statusSession, session) => {
+    console.log('Status da sessão:', statusSession);
+    console.log('Sessão:', session);
+  },
+  headless: true, // Mantém em modo headless (necessário no Render)
+}).then((client) => start(client));
 
 function start(client) {
   client.onMessage(async (message) => {
@@ -14,7 +27,7 @@ function start(client) {
     else if (hora >= 12 && hora < 18) saudacao = 'Boa tarde';
     else saudacao = 'Boa noite';
 
-    // Se for número (1-8), responde sem mostrar menu de novo
+    // Se for número de opção (1-8), responde sem mostrar menu de novo
     if (['1','2','3','4','5','6','7','8'].includes(msg)) {
 
       if (msg === '1') {
@@ -53,7 +66,7 @@ function start(client) {
       // Qualquer outra palavra mostra o menu com saudação personalizada
       await client.sendText(
         message.from,
-        `👋 ${saudacao}, *${nomeUsuario}*!\nSou o assistente virtual da *Suites da Ilha* 🌴`
+        `👋 ${saudacao}, *${nomeUsuario}*!\nSou o assistente virtual da *Pousada Algodoal Mitologia* 🌴`
       );
 
       await client.sendText(
